@@ -81,7 +81,7 @@ jobs:
           echo export SUBSCRIBER_IMAGE="litmusportal-subscriber" >> litmus-portal/env-vars
           echo export EVENT_TRACKER="litmusportal-event-tracker" >> litmus-portal/env-vars
           pwd
-          ls -lart litmus-portal
+          cat litmus-portal/env-vars
       - name: Uploading envs
         uses: actions/upload-artifact@v2
         with:
