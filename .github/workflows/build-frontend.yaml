@@ -1,11 +1,7 @@
 name: Docker Frontend Image CI
 on:
-  pull_request:
-    branches:
-      - master
-      - v*
-  commit:
-    push: 
+  push:
+    branches: 
       - gitlab*
 env:
   DOCKER_BUILDKIT: 1 # Enable Docker_buildkit in all build jobs
