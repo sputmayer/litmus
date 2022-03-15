@@ -118,12 +118,7 @@ jobs:
         env:
           FRONTEND_IMAGE: ${FRONTEND_IMAGE}
           IMG_TAG: ${IMG_TAG}
-          PLATFORMS: 
-            - linux/amd64
-            - linux/amd64/v2
-            - linux/amd64/v3
-            - linux/amd64/v4
-            - linux/386
+          PLATFORMS: "linux/amd64"
           REPONAME: "${{ secrets.REPONAME }}"         
           timestamp: ${timestamp}         
         run: |
