@@ -1,10 +1,9 @@
 name: build-pipeline
 on:
-  push:
+  pull_request:
     branches:
       - master
       - v*
-      - gitlab*
 
 jobs:
   changes:
