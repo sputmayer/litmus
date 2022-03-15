@@ -107,6 +107,6 @@ jobs:
           timestamp: ${timestamp}         
         run: |
           source litmus-portal/env-vars
-          timestamp=`date "+%s"
+          timestamp=`date "+%s"`
           cd litmus-portal
           make push-frontend
