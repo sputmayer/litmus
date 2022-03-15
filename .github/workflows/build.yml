@@ -62,75 +62,65 @@ jobs:
           cd litmus-portal
           make frontend-services-checks
 
-  docker-build-graphql-server:
-    runs-on: ubuntu-latest
-    needs:
-      - backend-checks
-      - changes
-    if: ${{ needs.changes.outputs.graphql-server == 'true' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build graphql server docker image
-        shell: bash
-        run: |
-          cd litmus-portal/graphql-server
-          docker build . -f Dockerfile --build-arg TARGETARCH=amd64
 
-  docker-build-authentication-server:
+  get-envs:
     runs-on: ubuntu-latest
-    needs:
-      - backend-checks
-      - changes
-    if: ${{ needs.changes.outputs.authentication == 'true' }}
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Build auth server docker image
-        shell: bash
-        run: |
-          cd litmus-portal/authentication
-          docker images && docker build . -f Dockerfile --build-arg TARGETARCH=amd64
+      - run: |
+          img_tag="ci"
+          # This is a condition where image tag looks like "pull/<pullrequest-name>" during pull request build
+          NEW_IMG_TAG=`echo $img_tag | sed "s/\//-/g"`
+          echo $NEW_IMG_TAG
+          echo export IMG_TAG=$NEW_IMG_TAG >> env-vars
+          echo export GRAPHQL_SERVER_IMAGE="litmusportal-server" >> env-vars
+          echo export AUTHENTICATION_SERVER_IMAGE="litmusportal-auth-server" >> env-vars
+          echo export FRONTEND_IMAGE="litmusportal-frontend" >> env-vars
+          echo export SUBSCRIBER_IMAGE="litmusportal-subscriber" >> env-vars
+          echo export EVENT_TRACKER="litmusportal-event-tracker" >> env-vars
+          
+      - name: Uploading envs
+        uses: actions/upload-artifact@v2
+        with:
+          name: env_artifact
+          path: litmus-portal/env-vars
 
-  docker-build-subscriber:
+  docker-build-and-push-frontend:
     runs-on: ubuntu-latest
     needs:
-      - backend-checks
-      - changes
-    if: ${{ needs.changes.outputs.subscriber == 'true' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build subscriber docker image
-        shell: bash
-        run: |
-          cd litmus-portal/cluster-agents/subscriber
-          docker build . -f Dockerfile --build-arg TARGETARCH=amd64
-
-  docker-build-event-tracker:
-    runs-on: ubuntu-latest
-    needs:
-      - backend-checks
-      - changes
-    if: ${{ needs.changes.outputs.event-tracker == 'true' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build event tracker docker image
-        shell: bash
-        run: |
-          cd litmus-portal/cluster-agents/event-tracker
-          docker build . -f Dockerfile --build-arg TARGETARCH=amd64
-
-  docker-build-frontend:
-    runs-on: ubuntu-latest
-    needs:
+      - get-envs
       - frontend-checks
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build frontend docker image
-        shell: bash
+
+      - name: Downloading image artficate
+        uses: actions/download-artifact@v2
+        with:
+          name: env_artifact
+          path: litmus-portal
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          version: latest
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push frontend docker image
+        env:
+          FRONTEND_IMAGE: ${FRONTEND_IMAGE}
+          IMG_TAG: ${IMG_TAG}
+          PLATFORMS: ${{ secrets.PLATFORMS }}
+          REPONAME: ${{ secrets.REPONAME }}         
+          timestamp: ${timestamp}         
         run: |
-          cd litmus-portal/frontend
-          docker build . -f Dockerfile --build-arg TARGETARCH=amd64
+          source env-vars
+          timestamp=`date "+%s"`
+          make push-frontend
