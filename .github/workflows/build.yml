@@ -74,12 +74,12 @@ jobs:
           # This is a condition where image tag looks like "pull/<pullrequest-name>" during pull request build
           NEW_IMG_TAG=`echo $img_tag | sed "s/\//-/g"`
           echo $NEW_IMG_TAG
-          echo export IMG_TAG=$NEW_IMG_TAG >> env-vars
-          echo export GRAPHQL_SERVER_IMAGE="litmusportal-server" >> env-vars
-          echo export AUTHENTICATION_SERVER_IMAGE="litmusportal-auth-server" >> env-vars
-          echo export FRONTEND_IMAGE="litmusportal-frontend" >> env-vars
-          echo export SUBSCRIBER_IMAGE="litmusportal-subscriber" >> env-vars
-          echo export EVENT_TRACKER="litmusportal-event-tracker" >> env-vars
+          echo export IMG_TAG=$NEW_IMG_TAG >> litmus-portal/env-vars
+          echo export GRAPHQL_SERVER_IMAGE="litmusportal-server" >> litmus-portal/env-vars
+          echo export AUTHENTICATION_SERVER_IMAGE="litmusportal-auth-server" >> litmus-portal/env-vars
+          echo export FRONTEND_IMAGE="litmusportal-frontend" >> litmus-portal/env-vars
+          echo export SUBSCRIBER_IMAGE="litmusportal-subscriber" >> litmus-portal/env-vars
+          echo export EVENT_TRACKER="litmusportal-event-tracker" >> litmus-portal/env-vars
           pwd
           ls -lart litmus-portal
       - name: Uploading envs
