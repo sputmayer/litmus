@@ -107,9 +107,6 @@ push-portal-component: docker.buildx buildx.push.image
 push-frontend: docker.buildx buildx.push.frontend
 
 buildx.push.image:
-	@echo $(DIRECTORY) 
-	@echo buildx build -f Dockerfile --progress plane --push --no-cache --platform $(PLATFORMS) -t $(REPONAME)/$(IMAGE_NAME):$(IMG_TAG) .
-	@ls -lart .
 	@cd $(DIRECTORY) && \
 	docker buildx build -f Dockerfile --progress plane --push --no-cache --platform $(PLATFORMS) -t $(REPONAME)/$(IMAGE_NAME):$(IMG_TAG) .
 
