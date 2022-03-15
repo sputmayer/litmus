@@ -118,8 +118,13 @@ jobs:
         env:
           FRONTEND_IMAGE: ${FRONTEND_IMAGE}
           IMG_TAG: ${IMG_TAG}
-          PLATFORMS: ${{ secrets.PLATFORMS }}
-          REPONAME: ${{ secrets.REPONAME }}         
+          PLATFORMS: 
+            - linux/amd64
+            - linux/amd64/v2
+            - linux/amd64/v3
+            - linux/amd64/v4
+            - linux/386
+          REPONAME: "${{ secrets.REPONAME }}"         
           timestamp: ${timestamp}         
         run: |
           source litmus-portal/env-vars
