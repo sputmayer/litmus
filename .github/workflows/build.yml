@@ -122,6 +122,6 @@ jobs:
           REPONAME: ${{ secrets.REPONAME }}         
           timestamp: ${timestamp}         
         run: |
-          source env-vars
+          source litmus-portal/env-vars
           timestamp=`date "+%s"`
           make push-frontend
